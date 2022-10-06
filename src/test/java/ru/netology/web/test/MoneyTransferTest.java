@@ -113,7 +113,7 @@ class MoneyTransferTest {
         Assertions.assertEquals(expected2, actual2);
     }
 
-    @Test
+   /* @Test
     void shouldTransferMoneyBetweenOwnCardsTo1MoreBalance() {
         String amount = "10001";
         open("http://localhost:9999");
@@ -134,5 +134,5 @@ class MoneyTransferTest {
         TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         Assertions.assertEquals(expected1, actual1);
         Assertions.assertEquals(expected2, actual2);
-    }
+    }*/
 }
