@@ -21,7 +21,7 @@ public class DashboardPage {
         heading.shouldBe(visible);
     }
 
-    public static TransferToCardPage TransferToCard(String idCard) {
+    public static TransferToCardPage transferToCard(String idCard) {
         String selector = "[data-test-id='" + idCard + "'] .button";
         $(selector).click();
         return new TransferToCardPage();

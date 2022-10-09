@@ -14,28 +14,27 @@ public class TransferToCardPage {
     private SelenideElement amountField = $("div:nth-child(1) > div > span > span > span.input__box > input");
     private SelenideElement fromField = $x("//input[@type='tel']");
     private SelenideElement replenishButton = $("[data-test-id=\"action-transfer\"]");
-    private SelenideElement ErrorNot = $(".notification__title");
-
+    private SelenideElement errorNot = $(".notification__title");
 
     public TransferToCardPage() {
         heading.shouldBe(visible);
     }
 
-    public DashboardPage inputTransterInfo(String amount, String from) {
+    private void input(int amount, String from) {
         amountField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        amountField.setValue(amount);
+        amountField.setValue(Integer.toString(amount));
         fromField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
         fromField.setValue(from);
         replenishButton.click();
+    }
+
+    public DashboardPage inputTransterInfo(int amount, String from) {
+        input(amount, from);
         return new DashboardPage();
     }
 
-    public void inputTransterInfoWrongCard(String amount, String from) {
-        amountField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        amountField.setValue(amount);
-        fromField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        fromField.setValue(from);
-        replenishButton.click();
-        ErrorNot.shouldBe(visible);
+    public void inputTransterInfoWrongCard(int amount, String from) {
+        input(amount, from);
+        errorNot.shouldBe(visible);
     }
 }

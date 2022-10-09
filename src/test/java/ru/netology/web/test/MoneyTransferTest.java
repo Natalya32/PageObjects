@@ -11,7 +11,7 @@ import static com.codeborne.selenide.Selenide.open;
 class MoneyTransferTest {
     @Test
     void shouldTransferMoneyBetweenOwnCardsTo2() {
-        String amount = "1500";
+        int amount = 1500;
         open("http://localhost:9999");
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
@@ -19,22 +19,22 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         var transferInfo = DataHelper.getTransferInfo();
-        var TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard2());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         DashboardPage dashboardPage = new DashboardPage();
-        int expected1 = 8500;
-        int expected2 = 11500;
+        int expected1 = dashboardPage.getCardBalance(transferInfo.getIdCard1()) - amount;
+        int expected2 = dashboardPage.getCardBalance(transferInfo.getIdCard2()) + amount;
+        var transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard2());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         int actual1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
         int actual2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
-        TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard1());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
+        transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard1());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         Assertions.assertEquals(expected1, actual1);
         Assertions.assertEquals(expected2, actual2);
     }
 
     @Test
     void shouldTransferMoneyBetweenOwnCardsTo1() {
-        String amount = "5800";
+        int amount = 5800;
         open("http://localhost:9999");
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
@@ -42,22 +42,21 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         var transferInfo = DataHelper.getTransferInfo();
-        var TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard1());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         DashboardPage dashboardPage = new DashboardPage();
-        int expected1 = 15800;
-        int expected2 = 4200;
+        int expected1 = dashboardPage.getCardBalance(transferInfo.getIdCard1()) + amount;
+        int expected2 = dashboardPage.getCardBalance(transferInfo.getIdCard2()) - amount;
+        var transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard1());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         int actual1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
         int actual2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
-        TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard2());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
+        transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard2());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         Assertions.assertEquals(expected1, actual1);
         Assertions.assertEquals(expected2, actual2);
     }
 
     @Test
     void shouldTransferMoneyBetweenOwnCardsTo2FullBalance() {
-        String amount = "10000";
         open("http://localhost:9999");
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
@@ -65,22 +64,23 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         var transferInfo = DataHelper.getTransferInfo();
-        var TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard2());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         DashboardPage dashboardPage = new DashboardPage();
+        int amount = dashboardPage.getCardBalance(transferInfo.getIdCard1());
         int expected1 = 0;
-        int expected2 = 20000;
+        int expected2 = dashboardPage.getCardBalance(transferInfo.getIdCard2()) + amount;
+        var transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard2());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         int actual1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
         int actual2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
-        TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard1());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
+        transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard1());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         Assertions.assertEquals(expected1, actual1);
         Assertions.assertEquals(expected2, actual2);
     }
 
     @Test
     void shouldTransferMoneyBetweenOwnCardsTo2FromWrongCard() {
-        String amount = "1000";
+        int amount = 1000;
         open("http://localhost:9999");
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
@@ -88,13 +88,13 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         var transferInfo = DataHelper.getTransferInfo();
-        var TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard2());
-        TransferToCardPage.inputTransterInfoWrongCard(amount, transferInfo.getWrongNumberCard());
+        var transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard2());
+        transferToCardPage.inputTransterInfoWrongCard(amount, transferInfo.getWrongNumberCard());
     }
 
     @Test
     void shouldTransferMoneyBetweenOwnCardsToSameCard() {
-        String amount = "10000";
+        int amount = 10000;
         open("http://localhost:9999");
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
@@ -102,20 +102,20 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         var transferInfo = DataHelper.getTransferInfo();
-        var TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard2());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         DashboardPage dashboardPage = new DashboardPage();
-        int expected1 = 10000;
-        int expected2 = 10000;
+        int expected1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
+        int expected2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
+        var transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard2());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         int actual1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
         int actual2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
         Assertions.assertEquals(expected1, actual1);
         Assertions.assertEquals(expected2, actual2);
     }
 
-   /* @Test
+    @Test
     void shouldTransferMoneyBetweenOwnCardsTo1MoreBalance() {
-        String amount = "10001";
+        int amount = 10001;
         open("http://localhost:9999");
         var loginPage = new LoginPageV1();
         var authInfo = DataHelper.getAuthInfo();
@@ -123,16 +123,16 @@ class MoneyTransferTest {
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
         var transferInfo = DataHelper.getTransferInfo();
-        var TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard1());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         DashboardPage dashboardPage = new DashboardPage();
-        int expected1 = 10000;
-        int expected2 = 10000;
+        int expected1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
+        int expected2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
+        var transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard1());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard2());
         int actual1 = dashboardPage.getCardBalance(transferInfo.getIdCard1());
         int actual2 = dashboardPage.getCardBalance(transferInfo.getIdCard2());
-        TransferToCardPage = DashboardPage.TransferToCard(transferInfo.getIdCard2());
-        TransferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
+        transferToCardPage = DashboardPage.transferToCard(transferInfo.getIdCard2());
+        transferToCardPage.inputTransterInfo(amount, transferInfo.getNumberCard1());
         Assertions.assertEquals(expected1, actual1);
         Assertions.assertEquals(expected2, actual2);
-    }*/
+    }
 }
